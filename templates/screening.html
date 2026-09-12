@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Screening | HireMatch AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+
+            <span class="brand-icon">✦</span>
+
+            HireMatch AI
+
+        </div>
+
+
+        <div class="nav-right">
+
+            <a href="/" class="nav-history">
+                Analyze
+            </a>
+
+            <a href="/history" class="nav-history">
+                History
+            </a>
+
+            <div class="nav-status">
+
+                <span class="status-dot"></span>
+
+                AI Engine Online
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- MAIN -->
+
+    <main class="screening-page">
+
+
+        <div class="screening-header">
+
+            <p class="eyebrow">
+                AI RECRUITMENT ENGINE
+            </p>
+
+            <h1>
+                Screen Multiple Candidates
+            </h1>
+
+            <p>
+                Upload multiple resumes and let HireMatch AI
+                automatically rank candidates against one job.
+            </p>
+
+        </div>
+
+
+
+        <!-- FORM -->
+
+        <form
+            action="/screen"
+            method="POST"
+            enctype="multipart/form-data"
+            class="screening-form"
+        >
+
+
+            <!-- JOB DESCRIPTION -->
+
+            <div class="screening-card">
+
+                <div class="card-heading">
+
+                    <span class="step-number">
+                        01
+                    </span>
+
+                    <div>
+
+                        <h2>
+                            Job Description
+                        </h2>
+
+                        <p>
+                            Enter the requirements for the position.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <textarea
+                    name="job_description"
+                    class="screening-textarea"
+                    placeholder="Example: We are looking for a Python Developer with experience in machine learning, Flask, SQL, Git and Docker..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- RESUMES -->
+
+            <div class="screening-card">
+
+                <div class="card-heading">
+
+                    <span class="step-number">
+                        02
+                    </span>
+
+                    <div>
+
+                        <h2>
+                            Candidate Resumes
+                        </h2>
+
+                        <p>
+                            Select multiple PDF resumes to screen.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <label
+                    for="resume-files"
+                    class="upload-zone"
+                >
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Select candidate resumes
+                    </strong>
+
+                    <span>
+                        PDF files only · Multiple files supported
+                    </span>
+
+                    <input
+                        id="resume-files"
+                        type="file"
+                        name="resumes"
+                        accept=".pdf"
+                        multiple
+                        required
+                    >
+
+                </label>
+
+
+                <div
+                    id="file-list"
+                    class="selected-files"
+                ></div>
+
+
+            </div>
+
+
+
+            <!-- BUTTON -->
+
+            <button
+                type="submit"
+                class="screening-button"
+            >
+
+                <span>
+                    ✦
+                </span>
+
+                Rank Candidates
+
+            </button>
+
+
+        </form>
+
+
+    </main>
+
+
+
+    <script>
+
+        const fileInput =
+            document.getElementById("resume-files");
+
+        const fileList =
+            document.getElementById("file-list");
+
+
+        fileInput.addEventListener(
+            "change",
+            function () {
+
+                fileList.innerHTML = "";
+
+
+                if (this.files.length === 0) {
+
+                    return;
+
+                }
+
+
+                const heading =
+                    document.createElement("div");
+
+                heading.className =
+                    "selected-count";
+
+                heading.textContent =
+                    this.files.length +
+                    " candidate resume(s) selected";
+
+                fileList.appendChild(
+                    heading
+                );
+
+
+                Array.from(this.files).forEach(
+                    function (file) {
+
+                        const item =
+                            document.createElement("div");
+
+                        item.className =
+                            "selected-file";
+
+                        item.innerHTML =
+                            "<span>📄</span>" +
+                            "<strong>" +
+                            file.name +
+                            "</strong>";
+
+                        fileList.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

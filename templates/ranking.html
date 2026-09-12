@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Ranking | HireMatch AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+
+            <span class="brand-icon">✦</span>
+
+            HireMatch AI
+
+        </div>
+
+
+        <div class="nav-right">
+
+            <a href="/" class="nav-history">
+                Analyze
+            </a>
+
+            <a href="/history" class="nav-history">
+                History
+            </a>
+
+            <div class="nav-status">
+
+                <span class="status-dot"></span>
+
+                AI Engine Online
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- MAIN -->
+
+    <main class="ranking-page">
+
+
+        <!-- HEADER -->
+
+        <div class="ranking-header">
+
+            <div>
+
+                <p class="eyebrow">
+                    AI CANDIDATE SCREENING
+                </p>
+
+                <h1>
+                    Candidate Ranking
+                </h1>
+
+                <p>
+                    Candidates ranked by their compatibility
+                    with the selected job description.
+                </p>
+
+            </div>
+
+
+            <a href="/" class="back-link">
+                ← New Screening
+            </a>
+
+        </div>
+
+
+
+        <!-- SUMMARY -->
+
+        <div class="ranking-summary">
+
+
+            <div class="ranking-stat">
+
+                <span class="stat-label">
+                    CANDIDATES
+                </span>
+
+                <strong>
+                    {{ candidates|length }}
+                </strong>
+
+            </div>
+
+
+            <div class="ranking-stat">
+
+                <span class="stat-label">
+                    TOP MATCH
+                </span>
+
+                <strong>
+                    {{ candidates[0].match_score }}%
+                </strong>
+
+            </div>
+
+
+            <div class="ranking-stat">
+
+                <span class="stat-label">
+                    SKILL MATCH
+                </span>
+
+                <strong>
+                    {{ candidates[0].skill_score }}%
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- CANDIDATE LIST -->
+
+        <div class="candidate-list">
+
+
+            {% for candidate in candidates %}
+
+
+            <div class="candidate-card">
+
+
+                <!-- RANK -->
+
+                <div class="candidate-rank">
+
+                    {% if candidate.rank == 1 %}
+
+                        🏆
+
+                    {% elif candidate.rank == 2 %}
+
+                        🥈
+
+                    {% elif candidate.rank == 3 %}
+
+                        🥉
+
+                    {% else %}
+
+                        #{{ candidate.rank }}
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- CANDIDATE INFO -->
+
+                <div class="candidate-info">
+
+                    <h2>
+                        {{ candidate.filename }}
+                    </h2>
+
+
+                    <div class="candidate-meta">
+
+                        <span>
+                            TF-IDF:
+                            <strong>
+                                {{ candidate.similarity_score }}%
+                            </strong>
+                        </span>
+
+
+                        <span>
+                            Skills:
+                            <strong>
+                                {{ candidate.skill_score }}%
+                            </strong>
+                        </span>
+
+                    </div>
+
+
+                    <div class="candidate-skills">
+
+                        {% for skill in candidate.matching_skills %}
+
+                            <span class="skill-badge">
+                                ✓ {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    {% if candidate.missing_skills %}
+
+                    <div class="missing-skills">
+
+                        Missing:
+
+                        {% for skill in candidate.missing_skills %}
+
+                            <span>
+                                {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- SCORE -->
+
+                <div class="candidate-score">
+
+                    <span>
+                        MATCH
+                    </span>
+
+                    <strong>
+                        {{ candidate.match_score }}%
+                    </strong>
+
+
+                    <div class="score-bar">
+
+                        <div
+                            class="score-fill"
+                            style="width: {{ candidate.match_score }}%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+
+        <!-- ACTION -->
+
+        <div class="ranking-actions">
+
+            <a href="/" class="primary-button">
+                Screen More Candidates
+            </a>
+
+        </div>
+
+
+    </main>
+
+
+</body>
+
+</html>

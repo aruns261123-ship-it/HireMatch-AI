@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis Results - HireMatch AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                H
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    HireMatch <span>AI</span>
+                </div>
+
+                <div class="brand-subtitle">
+                    Intelligent Recruitment
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="nav-status">
+
+            <span class="status-dot"></span>
+
+            Analysis Complete
+
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN -->
+
+    <main class="results-container">
+
+
+        <!-- HEADER -->
+
+        <section class="results-header">
+
+            <a href="/" class="back-button">
+                ← Analyze Another Resume
+            </a>
+
+            <div class="badge">
+                ✦ AI ANALYSIS COMPLETE
+            </div>
+
+            <h1>
+                Resume Analysis
+            </h1>
+
+            <p>
+                AI-powered analysis for
+                <strong>{{ filename }}</strong>
+            </p>
+
+        </section>
+
+
+        <!-- SCORE -->
+
+        <section class="score-card">
+
+            <div class="score-left">
+
+                <div class="score-label">
+                    OVERALL MATCH SCORE
+                </div>
+
+                <div class="score">
+
+                    {{ result.match_score }}<span>%</span>
+
+                </div>
+
+                <div class="score-message">
+
+                    {% if result.match_score >= 80 %}
+
+                        Excellent match for this position.
+
+                    {% elif result.match_score >= 60 %}
+
+                        Good match with some areas for improvement.
+
+                    {% elif result.match_score >= 40 %}
+
+                        Moderate match. Several skills could be improved.
+
+                    {% else %}
+
+                        Low match. Consider developing additional skills.
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="score-visual">
+
+                <div
+                    class="score-circle"
+                    style="--score: {{ result.match_score }};"
+                >
+
+                    <div class="circle-inner">
+
+                        <strong>
+                            {{ result.match_score }}%
+                        </strong>
+
+                        <span>
+                            MATCH
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- METRICS -->
+
+        <section class="metrics">
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+                    TF
+                </div>
+
+                <div>
+
+                    <span>
+                        TF-IDF Similarity
+                    </span>
+
+                    <strong>
+                        {{ result.similarity_score }}%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+                    SK
+                </div>
+
+                <div>
+
+                    <span>
+                        Skill Match
+                    </span>
+
+                    <strong>
+                        {{ result.skill_score }}%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <span>
+                        Skills Found
+                    </span>
+
+                    <strong>
+                        {{ result.resume_skills|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SKILLS -->
+
+        <section class="results-grid">
+
+
+            <!-- MATCHING SKILLS -->
+
+            <div class="result-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Matching Skills
+                        </h2>
+
+                        <p>
+                            Skills found in both resume and job description
+                        </p>
+
+                    </div>
+
+                    <div class="success-count">
+                        {{ result.matching_skills|length }}
+                    </div>
+
+                </div>
+
+
+                <div class="skills-list">
+
+                    {% if result.matching_skills %}
+
+                        {% for skill in result.matching_skills %}
+
+                            <span class="skill matching">
+                                ✓ {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="empty">
+                            No matching skills detected.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- MISSING SKILLS -->
+
+            <div class="result-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Missing Skills
+                        </h2>
+
+                        <p>
+                            Skills required by the job but not detected
+                        </p>
+
+                    </div>
+
+                    <div class="warning-count">
+                        {{ result.missing_skills|length }}
+                    </div>
+
+                </div>
+
+
+                <div class="skills-list">
+
+                    {% if result.missing_skills %}
+
+                        {% for skill in result.missing_skills %}
+
+                            <span class="skill missing">
+                                + {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="empty">
+                            No missing skills detected.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- RESUME SKILLS -->
+
+        <section class="result-card full-width">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Detected Resume Skills
+                    </h2>
+
+                    <p>
+                        Technical skills identified from the uploaded resume
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="skills-list">
+
+                {% for skill in result.resume_skills %}
+
+                    <span class="skill detected">
+                        {{ skill }}
+                    </span>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <!-- AI RECOMMENDATION -->
+
+        <section class="recommendation">
+
+            <div class="recommendation-icon">
+                ✦
+            </div>
+
+            <div>
+
+                <div class="recommendation-label">
+                    AI-POWERED RECOMMENDATION
+                </div>
+
+                <h2>
+                    Candidate Improvement Insights
+                </h2>
+
+
+                {% if result.missing_skills %}
+
+                    <p>
+
+                        This resume demonstrates
+                        <strong>
+                            {{ result.matching_skills|length }}
+                        </strong>
+                        matching skills.
+
+                        To improve the candidate's match for this
+                        position, consider developing or highlighting:
+
+                        <strong>
+                            {{ result.missing_skills|join(", ") }}
+                        </strong>.
+
+                    </p>
+
+                {% else %}
+
+                    <p>
+
+                        Excellent! The resume contains all the
+                        technical skills detected in the job description.
+                        The candidate appears to be a strong match.
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTION -->
+
+        <div class="bottom-action">
+
+            <a href="/" class="primary-button">
+                Analyze Another Resume →
+            </a>
+
+        </div>
+
+
+    </main>
+
+
+    <footer>
+
+        HireMatch AI • NLP-Based Resume Screening & Job Matching
+
+    </footer>
+
+
+</div>
+
+</body>
+
+</html>

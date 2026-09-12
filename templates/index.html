@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>HireMatch AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                H
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    HireMatch <span>AI</span>
+                </div>
+
+                <div class="brand-subtitle">
+                    Intelligent Recruitment
+                </div>
+
+            </div>
+
+        </div>
+
+
+    <div class="nav-right">
+
+    <a href="/screening" class="nav-history">
+        Screening
+    </a>
+
+    <a href="/history" class="nav-history">
+        History
+    </a>
+
+    <div class="nav-status">
+
+        <span class="status-dot"></span>
+
+        AI Engine Online
+
+    </div>
+
+</div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <main class="container">
+
+        <section class="hero">
+
+            <div class="badge">
+                ✦ AI-POWERED RESUME ANALYSIS
+            </div>
+
+            <h1>
+                Find the right match
+                <br>
+                <span>with intelligent AI.</span>
+            </h1>
+
+            <p>
+                Analyze resumes against job descriptions using
+                Natural Language Processing, TF-IDF similarity,
+                and intelligent skill matching.
+            </p>
+
+        </section>
+
+
+        <!-- ANALYSIS CARD -->
+
+        <section class="analysis-card">
+
+
+            <!-- RESUME -->
+
+            <div class="input-section">
+
+                <div class="section-title">
+
+                    <div class="number">
+                        01
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Upload Resume
+                        </h2>
+
+                        <p>
+                            Upload the candidate's PDF resume
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <label
+                    class="upload-box"
+                    for="resume"
+                >
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Choose a PDF resume
+                    </strong>
+
+                    <span>
+                        PDF files only
+                    </span>
+
+                    <div
+                        id="file-name"
+                        class="file-name"
+                    ></div>
+
+                </label>
+
+            </div>
+
+
+            <div class="divider"></div>
+
+
+            <!-- JOB DESCRIPTION -->
+
+            <div class="input-section">
+
+                <div class="section-title">
+
+                    <div class="number">
+                        02
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Job Description
+                        </h2>
+
+                        <p>
+                            Paste the job requirements below
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <textarea
+                    id="job_description"
+                    placeholder="Example:
+
+We are looking for a Python Developer with experience in Machine Learning, Flask, SQL, REST APIs and Docker..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <form
+                id="analysis-form"
+                action="/analyze"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    type="file"
+                    id="resume"
+                    name="resume"
+                    accept=".pdf"
+                    required
+                >
+
+                <input
+                    type="hidden"
+                    id="hidden-job-description"
+                    name="job_description"
+                >
+
+                <button
+                    type="submit"
+                    class="analyze-button"
+                >
+
+                    <span>
+                        Analyze Resume
+                    </span>
+
+                    <span class="arrow">
+                        →
+                    </span>
+
+                </button>
+
+                <a href="/screening" class="secondary-button">
+    Screen Multiple Candidates →
+</a>
+
+            </form>
+
+
+        </section>
+
+
+        <!-- FEATURES -->
+
+        <section class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    NLP
+                </div>
+
+                <div>
+                    <strong>
+                        Natural Language Processing
+                    </strong>
+
+                    <p>
+                        Intelligent text preprocessing
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    TF
+                </div>
+
+                <div>
+                    <strong>
+                        TF-IDF Analysis
+                    </strong>
+
+                    <p>
+                        Mathematical text similarity
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    AI
+                </div>
+
+                <div>
+                    <strong>
+                        Skill Intelligence
+                    </strong>
+
+                    <p>
+                        Identify matching and missing skills
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <footer>
+
+        HireMatch AI • NLP-Based Recruitment Assistant
+
+    </footer>
+
+
+</div>
+
+
+<script>
+
+const resumeInput =
+    document.getElementById("resume");
+
+const fileName =
+    document.getElementById("file-name");
+
+const form =
+    document.getElementById("analysis-form");
+
+const jobDescription =
+    document.getElementById("job_description");
+
+const hiddenJobDescription =
+    document.getElementById(
+        "hidden-job-description"
+    );
+
+
+resumeInput.addEventListener(
+    "change",
+    function () {
+
+        if (this.files.length > 0) {
+
+            fileName.textContent =
+                "✓ " + this.files[0].name;
+
+        }
+
+    }
+);
+
+
+form.addEventListener(
+    "submit",
+    function () {
+
+        hiddenJobDescription.value =
+            jobDescription.value;
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

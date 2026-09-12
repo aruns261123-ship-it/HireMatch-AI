@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis History | HireMatch AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+
+            <span class="brand-icon">✦</span>
+
+            HireMatch AI
+
+        </div>
+
+
+        <div class="nav-right">
+
+            <a href="/"
+               class="nav-history">
+                Analyze
+            </a>
+
+            <div class="nav-status">
+
+                <span class="status-dot"></span>
+
+                AI Engine Online
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="history-page">
+
+
+        <div class="history-header">
+
+            <div>
+
+                <p class="eyebrow">
+                    SYSTEM HISTORY
+                </p>
+
+                <h1>
+                    Analysis History
+                </h1>
+
+                <p>
+                    Review previous resume matching analyses.
+                </p>
+
+            </div>
+
+
+            <a href="/"
+               class="back-link">
+
+                ← Analyze Resume
+
+            </a>
+
+        </div>
+
+
+
+        {% if analyses %}
+
+
+        <div class="history-table-wrapper">
+
+            <table class="history-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Resume
+                        </th>
+
+                        <th>
+                            Match Score
+                        </th>
+
+                        <th>
+                            TF-IDF
+                        </th>
+
+                        <th>
+                            Skill Match
+                        </th>
+
+                        <th>
+                            Matching Skills
+                        </th>
+
+                        <th>
+                            Missing Skills
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for analysis in analyses %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            <strong>
+                                {{ analysis.filename }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="score-badge">
+
+                                {{ analysis.match_score }}%
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ analysis.similarity_score }}%
+
+                        </td>
+
+
+                        <td>
+
+                            {{ analysis.skill_score }}%
+
+                        </td>
+
+
+                        <td>
+
+                            {{ analysis.matching_skills }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ analysis.missing_skills }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ analysis.created_at }}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-history">
+
+            <div class="empty-icon">
+                ◌
+            </div>
+
+
+            <h2>
+                No analyses yet
+            </h2>
+
+
+            <p>
+                Upload a resume and analyze it against
+                a job description to create your first
+                history record.
+            </p>
+
+
+            <a href="/"
+               class="primary-button">
+
+                Analyze First Resume
+
+            </a>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </main>
+
+
+</body>
+
+</html>
