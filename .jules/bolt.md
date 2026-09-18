@@ -1,0 +1,3 @@
+## 2024-09-18 - Nested loops in TF-IDF Document Frequency Calculation
+**Learning:** The `matcher.py`'s manual TF-IDF implementation contained a massive $O(N^2 * M)$ complexity pitfall by re-calculating the Inverse Document Frequency (IDF) of every word in the vocabulary, iterating through all documents, inside a loop that iterates through every document to build TF-IDF vectors.
+**Action:** Always verify loops involving data processing across all dataset items to ensure aggregate values (like Document Frequencies) are pre-calculated outside the primary item processing loops. Convert lists of tokens to sets to enable $O(1)$ membership checks for frequency calculations.

@@ -150,13 +150,33 @@ def calculate_tfidf(documents):
         tokenized_documents
     )
 
+    # ⚡ Bolt Optimization: Use sets for O(1) membership lookups
+    doc_sets = [set(doc) for doc in tokenized_documents]
+
     vocabulary = set()
 
-    for document in tokenized_documents:
+    for doc_set in doc_sets:
 
-        vocabulary.update(document)
+        vocabulary.update(doc_set)
 
     vocabulary = sorted(vocabulary)
+
+    # ⚡ Bolt Optimization: Pre-calculate IDF to avoid O(N^2 * M) complexity
+    idf_dict = {}
+
+    for word in vocabulary:
+
+        document_frequency = sum(
+            1
+            for doc_set in doc_sets
+            if word in doc_set
+        )
+
+        idf_dict[word] = math.log(
+            (document_count + 1)
+            /
+            (document_frequency + 1)
+        ) + 1
 
     tfidf_vectors = []
 
@@ -168,32 +188,17 @@ def calculate_tfidf(documents):
 
         vector = {}
 
-        for word in vocabulary:
-
-            if total_words == 0:
-
-                tf = 0
-
-            else:
-
+        if total_words == 0:
+            for word in vocabulary:
+                vector[word] = 0
+        else:
+            for word in vocabulary:
                 tf = (
                     word_count[word]
                     / total_words
                 )
 
-            document_frequency = sum(
-                1
-                for doc in tokenized_documents
-                if word in doc
-            )
-
-            idf = math.log(
-                (document_count + 1)
-                /
-                (document_frequency + 1)
-            ) + 1
-
-            vector[word] = tf * idf
+                vector[word] = tf * idf_dict[word]
 
         tfidf_vectors.append(vector)
 
