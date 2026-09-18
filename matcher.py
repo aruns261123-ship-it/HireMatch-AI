@@ -158,6 +158,10 @@ def calculate_tfidf(documents):
 
     vocabulary = sorted(vocabulary)
 
+    doc_frequencies = Counter()
+    for document in tokenized_documents:
+        doc_frequencies.update(set(document))
+
     tfidf_vectors = []
 
     for document in tokenized_documents:
@@ -181,11 +185,7 @@ def calculate_tfidf(documents):
                     / total_words
                 )
 
-            document_frequency = sum(
-                1
-                for doc in tokenized_documents
-                if word in doc
-            )
+            document_frequency = doc_frequencies[word]
 
             idf = math.log(
                 (document_count + 1)
