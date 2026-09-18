@@ -50,7 +50,7 @@ def extract_pdf_text(filepath):
 
     reader = PdfReader(filepath)
 
-    text = ""
+    text_parts = []
 
     for page in reader.pages:
 
@@ -58,9 +58,12 @@ def extract_pdf_text(filepath):
 
         if page_text:
 
-            text += page_text + "\n"
+            text_parts.append(page_text)
 
-    return text
+    if not text_parts:
+        return ""
+
+    return "\n".join(text_parts) + "\n"
 
 
 @app.route("/")
