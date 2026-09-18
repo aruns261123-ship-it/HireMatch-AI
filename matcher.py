@@ -1,6 +1,7 @@
 import re
 import math
 from collections import Counter
+from functools import lru_cache
 
 
 # ============================================================
@@ -93,9 +94,12 @@ STOP_WORDS = {
 }
 
 
+@lru_cache(maxsize=128)
 def clean_text(text):
     """
     Basic NLP text preprocessing.
+    Optimized with lru_cache to prevent redundant processing of the same text
+    (e.g., job descriptions across multiple candidates).
     """
 
     text = text.lower()
@@ -115,9 +119,11 @@ def clean_text(text):
     return text.strip()
 
 
+@lru_cache(maxsize=128)
 def tokenize(text):
     """
     Tokenize text and remove stop words.
+    Optimized with lru_cache to avoid re-tokenizing the same text multiple times.
     """
 
     text = clean_text(text)
@@ -262,11 +268,13 @@ def calculate_similarity(
     )
 
 
+@lru_cache(maxsize=128)
 def extract_skills(text):
     """
     Extract technical skills using whole-word matching.
     This prevents false positives such as detecting
     'c' inside words like 'experience'.
+    Optimized with lru_cache to avoid re-extracting skills for the same text.
     """
 
     text = clean_text(text)
