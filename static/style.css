@@ -2003,3 +2003,11 @@ footer {
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.1);
 }
+/* ACCESSIBILITY: Focus states for custom inputs */
+.upload-box:focus-visible,
+.upload-zone:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+    border-color: #2563eb;
+    background: #f8fbff;
+}

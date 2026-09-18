@@ -101,7 +101,7 @@
 
                     <div>
 
-                        <h2>
+                        <h2 id="screening-job-desc">
                             Job Description
                         </h2>
 
@@ -116,6 +116,7 @@
 
                 <textarea
                     name="job_description"
+                    aria-labelledby="screening-job-desc"
                     class="screening-textarea"
                     placeholder="Example: We are looking for a Python Developer with experience in machine learning, Flask, SQL, Git and Docker..."
                     required
@@ -153,6 +154,8 @@
                 <label
                     for="resume-files"
                     class="upload-zone"
+                    tabindex="0"
+                    role="button"
                 >
 
                     <div class="upload-icon">
@@ -219,6 +222,25 @@
 
         const fileList =
             document.getElementById("file-list");
+
+        const uploadZone = document.querySelector(".upload-zone");
+
+        uploadZone.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        const form = document.querySelector(".screening-form");
+        form.addEventListener("submit", function() {
+            const btn = document.querySelector(".screening-button");
+            if (btn) {
+                btn.innerHTML = '<span>⌛</span> Ranking...';
+                btn.style.opacity = "0.8";
+                btn.style.cursor = "not-allowed";
+            }
+        });
 
 
         fileInput.addEventListener(

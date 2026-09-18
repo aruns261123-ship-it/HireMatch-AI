@@ -127,6 +127,8 @@
                 <label
                     class="upload-box"
                     for="resume"
+                    tabindex="0"
+                    role="button"
                 >
 
                     <div class="upload-icon">
@@ -166,7 +168,7 @@
 
                     <div>
 
-                        <h2>
+                        <h2 id="job-desc-heading">
                             Job Description
                         </h2>
 
@@ -181,6 +183,7 @@
 
                 <textarea
                     id="job_description"
+                    aria-labelledby="job-desc-heading"
                     placeholder="Example:
 
 We are looking for a Python Developer with experience in Machine Learning, Flask, SQL, REST APIs and Docker..."
@@ -333,6 +336,15 @@ const hiddenJobDescription =
     );
 
 
+const uploadBox = document.querySelector(".upload-box");
+
+uploadBox.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        resumeInput.click();
+    }
+});
+
 resumeInput.addEventListener(
     "change",
     function () {
@@ -355,6 +367,12 @@ form.addEventListener(
         hiddenJobDescription.value =
             jobDescription.value;
 
+        const btn = document.querySelector(".analyze-button");
+        if (btn) {
+            btn.innerHTML = '<span>Analyzing...</span><span class="arrow">⌛</span>';
+            btn.style.opacity = "0.8";
+            btn.style.cursor = "not-allowed";
+        }
     }
 );
 
