@@ -3,7 +3,10 @@ import os
 from flask import (
     Flask,
     render_template,
-    request
+    request,
+    redirect,
+    url_for,
+    flash
 )
 
 from werkzeug.utils import secure_filename
@@ -11,18 +14,30 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 
 from matcher import calculate_match, rank_candidates
-from database import init_db, save_analysis, get_history
+from database import (
+    init_db,
+    save_analysis,
+    get_history_parsed,
+    delete_history
+)
 
 
 app = Flask(__name__)
+
+# Needed for flash messages
+app.secret_key = "hirematch-ai-dev-secret-key"
 
 
 UPLOAD_FOLDER = "uploads"
 
 ALLOWED_EXTENSIONS = {"pdf"}
 
+# Reject accidental huge uploads (e.g. a whole folder selected at once)
+MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB
+
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 
 
 os.makedirs(
@@ -47,20 +62,66 @@ def allowed_file(filename):
 
 
 def extract_pdf_text(filepath):
+    """
+    Extract text from a PDF. Returns an empty string
+    instead of crashing on encrypted or corrupt files.
+    """
 
-    reader = PdfReader(filepath)
+    try:
+        reader = PdfReader(filepath)
+    except Exception:
+        return ""
 
     text = ""
 
     for page in reader.pages:
 
-        page_text = page.extract_text()
+        try:
+            page_text = page.extract_text()
+        except Exception:
+            page_text = None
 
         if page_text:
-
             text += page_text + "\n"
 
     return text
+
+
+def score_color(score):
+    """
+    Map a 0-100 match score to a color class
+    used for badges and progress bars.
+    """
+
+    if score >= 80:
+        return "high"
+    if score >= 60:
+        return "good"
+    if score >= 40:
+        return "mid"
+    return "low"
+
+
+@app.context_processor
+def template_context():
+    """
+    Expose the active page (for navbar highlighting)
+    and the score color helper to all templates.
+    """
+
+    path = request.path
+
+    if path.startswith("/screening") or path.startswith("/screen"):
+        active_page = "screening"
+    elif path.startswith("/history"):
+        active_page = "history"
+    else:
+        active_page = "analyze"
+
+    return {
+        "active_page": active_page,
+        "score_color": score_color
+    }
 
 
 @app.route("/")
@@ -87,26 +148,33 @@ def analyze():
     ).strip()
 
 
-    if not resume:
+    if not resume or not resume.filename:
 
-        return "Please upload a resume."
+        flash(
+            "Please upload a resume.",
+            "error"
+        )
+        return redirect(url_for("home"))
 
 
     if not allowed_file(
         resume.filename
     ):
 
-        return (
-            "Only PDF files are "
-            "currently supported."
+        flash(
+            "Only PDF files are currently supported.",
+            "error"
         )
+        return redirect(url_for("home"))
 
 
     if not job_description:
 
-        return (
-            "Please enter a job description."
+        flash(
+            "Please enter a job description.",
+            "error"
         )
+        return redirect(url_for("home"))
 
 
     filename = secure_filename(
@@ -130,10 +198,12 @@ def analyze():
 
     if not resume_text.strip():
 
-        return (
-            "Could not extract text "
-            "from this PDF."
+        flash(
+            "Could not extract text from this PDF. "
+            "Make sure it is a text-based resume, not a scan.",
+            "error"
         )
+        return redirect(url_for("home"))
 
 
     result = calculate_match(
@@ -153,6 +223,7 @@ def analyze():
         result=result,
         filename=filename
     )
+
 
 @app.route("/screening")
 def screening_page():
@@ -177,14 +248,26 @@ def screen_candidates():
     ).strip()
 
 
-    if not resumes:
-
-        return "Please upload at least one resume."
-
-
     if not job_description:
 
-        return "Please enter a job description."
+        flash(
+            "Please enter a job description.",
+            "error"
+        )
+        return redirect(url_for("screening_page"))
+
+    if not resumes or all(
+        not resume.filename for resume in resumes
+    ):
+
+        flash(
+            "Please upload at least one resume.",
+            "error"
+        )
+        return redirect(url_for("screening_page"))
+
+    candidates = []
+    skipped = []
 
 
     candidates = []
@@ -200,7 +283,7 @@ def screen_candidates():
         if not allowed_file(
             resume.filename
         ):
-
+            skipped.append(resume.filename)
             continue
 
 
@@ -224,7 +307,7 @@ def screen_candidates():
 
 
         if not resume_text.strip():
-
+            skipped.append(resume.filename)
             continue
 
 
@@ -239,7 +322,12 @@ def screen_candidates():
 
     if not candidates:
 
-        return "Could not extract text from the uploaded resumes."
+        flash(
+            "Could not extract text from the uploaded resumes. "
+            "Make sure they are text-based PDFs.",
+            "error"
+        )
+        return redirect(url_for("screening_page"))
 
 
     ranked_candidates = rank_candidates(
@@ -251,18 +339,35 @@ def screen_candidates():
     return render_template(
         "ranking.html",
         candidates=ranked_candidates,
-        job_description=job_description
+        job_description=job_description,
+        skipped=skipped
     )
 
 @app.route("/history")
 def history():
 
-    analyses = get_history()
+    analyses = get_history_parsed()
 
     return render_template(
         "history.html",
         analyses=analyses
     )
+
+
+@app.route(
+    "/history/clear",
+    methods=["POST"]
+)
+def clear_history():
+
+    delete_history()
+
+    flash(
+        "Analysis history cleared.",
+        "success"
+    )
+
+    return redirect(url_for("history"))
 
 
 if __name__ == "__main__":

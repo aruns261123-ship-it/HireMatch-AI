@@ -20,36 +20,75 @@
 
 <div class="page">
 
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'error' %}!{% else %}✓{% endif %}
+                        </span>
+                        <span class="flash-message">{{ message }}</span>
+                        <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    </div>
+
+
     <!-- NAVBAR -->
 
     <nav class="navbar">
 
-        <div class="brand">
+        <a href="{{ url_for('home') }}" class="brand-link">
 
-            <div class="brand-icon">
-                H
-            </div>
+            <div class="brand">
 
-            <div>
-
-                <div class="brand-name">
-                    HireMatch <span>AI</span>
+                <div class="brand-icon">
+                    H
                 </div>
 
-                <div class="brand-subtitle">
-                    Intelligent Recruitment
+                <div>
+
+                    <div class="brand-name">
+                        HireMatch <span>AI</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Intelligent Recruitment
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
+        </a>
 
+        <div class="nav-right">
 
-        <div class="nav-status">
+            <a href="{{ url_for('home') }}" class="nav-link active">
+                Analyze
+            </a>
 
-            <span class="status-dot"></span>
+            <a href="{{ url_for('screening_page') }}" class="nav-link">
+                Screening
+            </a>
 
-            Analysis Complete
+            <a href="{{ url_for('history') }}" class="nav-link">
+                History
+            </a>
+
+            <div class="nav-status">
+
+                <span class="status-dot"></span>
+
+                Analysis Complete
+
+            </div>
 
         </div>
 
@@ -65,7 +104,7 @@
 
         <section class="results-header">
 
-            <a href="/" class="back-button">
+            <a href="{{ url_for('home') }}" class="back-button">
                 ← Analyze Another Resume
             </a>
 
@@ -352,13 +391,23 @@
 
             <div class="skills-list">
 
-                {% for skill in result.resume_skills %}
+                {% if result.resume_skills %}
 
-                    <span class="skill detected">
-                        {{ skill }}
-                    </span>
+                    {% for skill in result.resume_skills %}
 
-                {% endfor %}
+                        <span class="skill detected">
+                            {{ skill }}
+                        </span>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="empty">
+                        No known technical skills were detected in this resume.
+                    </p>
+
+                {% endif %}
 
             </div>
 
@@ -424,8 +473,12 @@
 
         <div class="bottom-action">
 
-            <a href="/" class="primary-button">
+            <a href="{{ url_for('home') }}" class="primary-button">
                 Analyze Another Resume →
+            </a>
+
+            <a href="{{ url_for('screening_page') }}" class="secondary-button">
+                Screen Multiple Candidates
             </a>
 
         </div>
@@ -436,12 +489,38 @@
 
     <footer>
 
-        HireMatch AI • NLP-Based Resume Screening & Job Matching
+        HireMatch AI • NLP-Based Resume Screening &amp; Job Matching
 
     </footer>
 
 
 </div>
+
+
+<script>
+
+/* Auto-dismiss flash messages */
+
+document.querySelectorAll(".flash").forEach(
+    function (flash) {
+
+        flash.querySelector(".flash-close")
+            .addEventListener("click", function () {
+                flash.remove();
+            });
+
+        setTimeout(
+            function () {
+                flash.classList.add("fade-out");
+            },
+            6000
+        );
+
+    }
+);
+
+</script>
+
 
 </body>
 

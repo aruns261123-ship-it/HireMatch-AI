@@ -18,26 +18,70 @@
 
 <body>
 
+<div class="page">
+
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'error' %}!{% else %}✓{% endif %}
+                        </span>
+                        <span class="flash-message">{{ message }}</span>
+                        <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    </div>
+
+
     <!-- NAVBAR -->
 
     <nav class="navbar">
 
-        <div class="brand">
+        <a href="{{ url_for('home') }}" class="brand-link">
 
-            <span class="brand-icon">✦</span>
+            <div class="brand">
 
-            HireMatch AI
+                <div class="brand-icon">
+                    H
+                </div>
 
-        </div>
+                <div>
 
+                    <div class="brand-name">
+                        HireMatch <span>AI</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Intelligent Recruitment
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
 
         <div class="nav-right">
 
-            <a href="/" class="nav-history">
+            <a href="{{ url_for('home') }}"
+               class="nav-link {% if active_page == 'analyze' %}active{% endif %}">
                 Analyze
             </a>
 
-            <a href="/history" class="nav-history">
+            <a href="{{ url_for('screening_page') }}"
+               class="nav-link {% if active_page == 'screening' %}active{% endif %}">
+                Screening
+            </a>
+
+            <a href="{{ url_for('history') }}"
+               class="nav-link {% if active_page == 'history' %}active{% endif %}">
                 History
             </a>
 
@@ -54,11 +98,9 @@
     </nav>
 
 
-
     <!-- MAIN -->
 
     <main class="screening-page">
-
 
         <div class="screening-header">
 
@@ -78,14 +120,14 @@
         </div>
 
 
-
         <!-- FORM -->
 
         <form
-            action="/screen"
+            action="{{ url_for('screen_candidates') }}"
             method="POST"
             enctype="multipart/form-data"
             class="screening-form"
+            id="screening-form"
         >
 
 
@@ -123,7 +165,6 @@
                 ></textarea>
 
             </div>
-
 
 
             <!-- RESUMES -->
@@ -191,19 +232,17 @@
             </div>
 
 
-
             <!-- BUTTON -->
 
             <button
                 type="submit"
+                id="screening-button"
                 class="screening-button"
             >
 
-                <span>
-                    ✦
+                <span class="button-label">
+                    ✦ Rank Candidates
                 </span>
-
-                Rank Candidates
 
             </button>
 
@@ -214,14 +253,11 @@
     </main>
 
 
+    <footer>
 
-    <script>
+        HireMatch AI • NLP-Based Recruitment Assistant
 
-        const fileInput =
-            document.getElementById("resume-files");
-
-        const fileList =
-            document.getElementById("file-list");
+    </footer>
 
         const uploadZone = document.querySelector(".upload-zone");
 
@@ -243,61 +279,175 @@
         });
 
 
-        fileInput.addEventListener(
-            "change",
-            function () {
-
-                fileList.innerHTML = "";
+</div>
 
 
-                if (this.files.length === 0) {
+<script>
 
-                    return;
+const fileInput =
+    document.getElementById("resume-files");
 
-                }
+const fileList =
+    document.getElementById("file-list");
 
+const form =
+    document.getElementById("screening-form");
 
-                const heading =
-                    document.createElement("div");
+const submitButton =
+    document.getElementById("screening-button");
 
-                heading.className =
-                    "selected-count";
-
-                heading.textContent =
-                    this.files.length +
-                    " candidate resume(s) selected";
-
-                fileList.appendChild(
-                    heading
-                );
+const uploadZone =
+    document.querySelector(".upload-zone");
 
 
-                Array.from(this.files).forEach(
-                    function (file) {
+function renderFileList() {
 
-                        const item =
-                            document.createElement("div");
+    fileList.innerHTML = "";
 
-                        item.className =
-                            "selected-file";
+    if (fileInput.files.length === 0) {
+        return;
+    }
 
-                        item.innerHTML =
-                            "<span>📄</span>" +
-                            "<strong>" +
-                            file.name +
-                            "</strong>";
+    const heading =
+        document.createElement("div");
 
-                        fileList.appendChild(
-                            item
-                        );
+    heading.className =
+        "selected-count";
 
-                    }
-                );
+    heading.textContent =
+        fileInput.files.length +
+        " candidate resume(s) selected";
+
+    fileList.appendChild(
+        heading
+    );
+
+
+    Array.from(fileInput.files).forEach(
+        function (file) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "selected-file";
+
+            const icon =
+                document.createElement("span");
+
+            icon.textContent = "📄";
+
+            const name =
+                document.createElement("strong");
+
+            name.textContent = file.name;
+
+            item.appendChild(icon);
+            item.appendChild(name);
+
+            fileList.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+fileInput.addEventListener(
+    "change",
+    renderFileList
+);
+
+
+/* Drag and drop support */
+
+["dragenter", "dragover"].forEach(
+    function (eventName) {
+
+        uploadZone.addEventListener(
+            eventName,
+            function (event) {
+
+                event.preventDefault();
+                uploadZone.classList.add("dragover");
 
             }
         );
 
-    </script>
+    }
+);
+
+
+["dragleave", "drop"].forEach(
+    function (eventName) {
+
+        uploadZone.addEventListener(
+            eventName,
+            function (event) {
+
+                event.preventDefault();
+                uploadZone.classList.remove("dragover");
+
+            }
+        );
+
+    }
+);
+
+
+uploadZone.addEventListener(
+    "drop",
+    function (event) {
+
+        const files = event.dataTransfer.files;
+
+        if (files.length > 0) {
+
+            fileInput.files = files;
+            renderFileList();
+
+        }
+
+    }
+);
+
+
+/* Prevent double submits and show a loading state */
+
+form.addEventListener(
+    "submit",
+    function () {
+
+        submitButton.classList.add("loading");
+        submitButton.disabled = true;
+
+    }
+);
+
+
+/* Auto-dismiss flash messages */
+
+document.querySelectorAll(".flash").forEach(
+    function (flash) {
+
+        flash.querySelector(".flash-close")
+            .addEventListener("click", function () {
+                flash.remove();
+            });
+
+        setTimeout(
+            function () {
+                flash.classList.add("fade-out");
+            },
+            6000
+        );
+
+    }
+);
+
+</script>
 
 
 </body>

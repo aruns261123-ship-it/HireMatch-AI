@@ -18,27 +18,47 @@
 
 <body>
 
+<div class="page">
 
     <!-- NAVBAR -->
 
     <nav class="navbar">
 
-        <div class="brand">
+        <a href="{{ url_for('home') }}" class="brand-link">
 
-            <span class="brand-icon">✦</span>
+            <div class="brand">
 
-            HireMatch AI
+                <div class="brand-icon">
+                    H
+                </div>
 
-        </div>
+                <div>
 
+                    <div class="brand-name">
+                        HireMatch <span>AI</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Intelligent Recruitment
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
 
         <div class="nav-right">
 
-            <a href="/" class="nav-history">
+            <a href="{{ url_for('home') }}" class="nav-link">
                 Analyze
             </a>
 
-            <a href="/history" class="nav-history">
+            <a href="{{ url_for('screening_page') }}" class="nav-link active">
+                Screening
+            </a>
+
+            <a href="{{ url_for('history') }}" class="nav-link">
                 History
             </a>
 
@@ -46,14 +66,13 @@
 
                 <span class="status-dot"></span>
 
-                AI Engine Online
+                Analysis Complete
 
             </div>
 
         </div>
 
     </nav>
-
 
 
     <!-- MAIN -->
@@ -83,12 +102,14 @@
             </div>
 
 
-            <a href="/" class="back-link">
+            <a href="{{ url_for('screening_page') }}" class="back-link">
                 ← New Screening
             </a>
 
         </div>
 
+
+        {% if candidates %}
 
 
         <!-- SUMMARY -->
@@ -125,7 +146,7 @@
             <div class="ranking-stat">
 
                 <span class="stat-label">
-                    SKILL MATCH
+                    BEST SKILL MATCH
                 </span>
 
                 <strong>
@@ -138,6 +159,25 @@
         </div>
 
 
+        {% if skipped %}
+
+        <div class="flash flash-warning inline-flash">
+
+            <span class="flash-icon">!</span>
+
+            <span class="flash-message">
+
+                {{ skipped|length }} file(s) could not be processed
+                (non-PDF or no extractable text) and were skipped:
+
+                {{ skipped|join(", ") }}
+
+            </span>
+
+        </div>
+
+        {% endif %}
+
 
         <!-- CANDIDATE LIST -->
 
@@ -147,7 +187,7 @@
             {% for candidate in candidates %}
 
 
-            <div class="candidate-card">
+            <div class="candidate-card {% if candidate.rank == 1 %}top-candidate{% endif %}">
 
 
                 <!-- RANK -->
@@ -173,7 +213,6 @@
                     {% endif %}
 
                 </div>
-
 
 
                 <!-- CANDIDATE INFO -->
@@ -207,13 +246,23 @@
 
                     <div class="candidate-skills">
 
-                        {% for skill in candidate.matching_skills %}
+                        {% if candidate.matching_skills %}
 
-                            <span class="skill-badge">
-                                ✓ {{ skill }}
+                            {% for skill in candidate.matching_skills %}
+
+                                <span class="skill-badge">
+                                    ✓ {{ skill }}
+                                </span>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <span class="empty">
+                                No matching skills detected.
                             </span>
 
-                        {% endfor %}
+                        {% endif %}
 
                     </div>
 
@@ -239,10 +288,9 @@
                 </div>
 
 
-
                 <!-- SCORE -->
 
-                <div class="candidate-score">
+                <div class="candidate-score score-{{ score_color(candidate.match_score) }}">
 
                     <span>
                         MATCH
@@ -257,7 +305,8 @@
 
                         <div
                             class="score-fill"
-                            style="width: {{ candidate.match_score }}%;">
+                            style="width: {{ candidate.match_score }}%;"
+                        >
                         </div>
 
                     </div>
@@ -274,19 +323,56 @@
         </div>
 
 
+        {% else %}
+
+
+        <div class="empty-history">
+
+            <div class="empty-icon">
+                ◌
+            </div>
+
+            <h2>
+                No candidates to rank
+            </h2>
+
+            <p>
+                None of the uploaded resumes could be processed.
+                Please make sure they are text-based PDF files.
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
 
         <!-- ACTION -->
 
         <div class="ranking-actions">
 
-            <a href="/" class="primary-button">
-                Screen More Candidates
+            <a href="{{ url_for('screening_page') }}" class="primary-button">
+                Screen More Candidates →
+            </a>
+
+            <a href="{{ url_for('home') }}" class="secondary-button">
+                Analyze Single Resume
             </a>
 
         </div>
 
 
     </main>
+
+
+    <footer>
+
+        HireMatch AI • NLP-Based Resume Screening &amp; Job Matching
+
+    </footer>
+
+
+</div>
 
 
 </body>

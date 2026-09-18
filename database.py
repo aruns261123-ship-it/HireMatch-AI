@@ -59,7 +59,12 @@ def save_analysis(filename, result):
     conn.close()
 
 
-def get_history():
+def get_history_parsed():
+    """
+    Return history rows with skill JSON parsed into
+    real lists so templates can render skill chips.
+    """
+
     conn = get_connection()
 
     rows = conn.execute("""
@@ -70,4 +75,39 @@ def get_history():
 
     conn.close()
 
-    return [dict(row) for row in rows]
+    analyses = []
+
+    for row in rows:
+
+        analysis = dict(row)
+
+        try:
+            analysis["matching_skills"] = json.loads(
+                analysis["matching_skills"] or "[]"
+            )
+        except (ValueError, TypeError):
+            analysis["matching_skills"] = []
+
+        try:
+            analysis["missing_skills"] = json.loads(
+                analysis["missing_skills"] or "[]"
+            )
+        except (ValueError, TypeError):
+            analysis["missing_skills"] = []
+
+        analyses.append(analysis)
+
+    return analyses
+
+
+def delete_history():
+    """
+    Remove all rows from the analyses table.
+    """
+
+    conn = get_connection()
+
+    conn.execute("DELETE FROM analyses")
+
+    conn.commit()
+    conn.close()

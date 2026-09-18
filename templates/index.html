@@ -8,7 +8,10 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>HireMatch AI</title>
+    <title>HireMatch AI — Intelligent Resume Screening</title>
+
+    <meta name="description"
+          content="Analyze resumes against job descriptions using NLP, TF-IDF similarity and intelligent skill matching.">
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
@@ -20,58 +23,89 @@
 
 <div class="page">
 
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'error' %}!{% else %}✓{% endif %}
+                        </span>
+                        <span class="flash-message">{{ message }}</span>
+                        <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    </div>
+
 
     <!-- NAVBAR -->
 
     <nav class="navbar">
 
-        <div class="brand">
+        <a href="{{ url_for('home') }}" class="brand-link">
 
-            <div class="brand-icon">
-                H
+            <div class="brand">
+
+                <div class="brand-icon">
+                    H
+                </div>
+
+                <div>
+
+                    <div class="brand-name">
+                        HireMatch <span>AI</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Intelligent Recruitment
+                    </div>
+
+                </div>
+
             </div>
 
-            <div>
+        </a>
 
-                <div class="brand-name">
-                    HireMatch <span>AI</span>
-                </div>
+        <div class="nav-right">
 
-                <div class="brand-subtitle">
-                    Intelligent Recruitment
-                </div>
+            <a href="{{ url_for('home') }}"
+               class="nav-link {% if active_page == 'analyze' %}active{% endif %}">
+                Analyze
+            </a>
+
+            <a href="{{ url_for('screening_page') }}"
+               class="nav-link {% if active_page == 'screening' %}active{% endif %}">
+                Screening
+            </a>
+
+            <a href="{{ url_for('history') }}"
+               class="nav-link {% if active_page == 'history' %}active{% endif %}">
+                History
+            </a>
+
+            <div class="nav-status">
+
+                <span class="status-dot"></span>
+
+                AI Engine Online
 
             </div>
 
         </div>
 
-
-    <div class="nav-right">
-
-    <a href="/screening" class="nav-history">
-        Screening
-    </a>
-
-    <a href="/history" class="nav-history">
-        History
-    </a>
-
-    <div class="nav-status">
-
-        <span class="status-dot"></span>
-
-        AI Engine Online
-
-    </div>
-
-</div>
-
     </nav>
 
 
-    <!-- HERO -->
+    <!-- MAIN -->
 
     <main class="container">
+
+        <!-- HERO -->
 
         <section class="hero">
 
@@ -98,129 +132,122 @@
 
         <section class="analysis-card">
 
-
-            <!-- RESUME -->
-
-            <div class="input-section">
-
-                <div class="section-title">
-
-                    <div class="number">
-                        01
-                    </div>
-
-                    <div>
-
-                        <h2>
-                            Upload Resume
-                        </h2>
-
-                        <p>
-                            Upload the candidate's PDF resume
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <label
-                    class="upload-box"
-                    for="resume"
-                    tabindex="0"
-                    role="button"
-                >
-
-                    <div class="upload-icon">
-                        ↑
-                    </div>
-
-                    <strong>
-                        Choose a PDF resume
-                    </strong>
-
-                    <span>
-                        PDF files only
-                    </span>
-
-                    <div
-                        id="file-name"
-                        class="file-name"
-                    ></div>
-
-                </label>
-
-            </div>
-
-
-            <div class="divider"></div>
-
-
-            <!-- JOB DESCRIPTION -->
-
-            <div class="input-section">
-
-                <div class="section-title">
-
-                    <div class="number">
-                        02
-                    </div>
-
-                    <div>
-
-                        <h2 id="job-desc-heading">
-                            Job Description
-                        </h2>
-
-                        <p>
-                            Paste the job requirements below
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <textarea
-                    id="job_description"
-                    aria-labelledby="job-desc-heading"
-                    placeholder="Example:
-
-We are looking for a Python Developer with experience in Machine Learning, Flask, SQL, REST APIs and Docker..."
-                ></textarea>
-
-            </div>
-
-
-            <!-- FORM -->
-
             <form
                 id="analysis-form"
-                action="/analyze"
+                action="{{ url_for('analyze') }}"
                 method="POST"
                 enctype="multipart/form-data"
             >
 
-                <input
-                    type="file"
-                    id="resume"
-                    name="resume"
-                    accept=".pdf"
-                    required
-                >
+                <!-- RESUME -->
 
-                <input
-                    type="hidden"
-                    id="hidden-job-description"
-                    name="job_description"
-                >
+                <div class="input-section">
+
+                    <div class="section-title">
+
+                        <div class="number">
+                            01
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Upload Resume
+                            </h2>
+
+                            <p>
+                                Upload the candidate's PDF resume
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <label
+                        class="upload-box"
+                        for="resume"
+                    >
+
+                        <div class="upload-icon">
+                            ↑
+                        </div>
+
+                        <strong>
+                            Choose a PDF resume
+                        </strong>
+
+                        <span>
+                            PDF files only · drag &amp; drop supported
+                        </span>
+
+                        <div
+                            id="file-name"
+                            class="file-name"
+                        ></div>
+
+                        <input
+                            type="file"
+                            id="resume"
+                            name="resume"
+                            accept=".pdf"
+                            required
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <div class="divider"></div>
+
+
+                <!-- JOB DESCRIPTION -->
+
+                <div class="input-section">
+
+                    <div class="section-title">
+
+                        <div class="number">
+                            02
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Job Description
+                            </h2>
+
+                            <p>
+                                Paste the job requirements below
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        id="job_description"
+                        name="job_description"
+                        placeholder="Example:
+
+We are looking for a Python Developer with experience in Machine Learning, Flask, SQL, REST APIs and Docker..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- ACTIONS -->
 
                 <button
                     type="submit"
+                    id="analyze-button"
                     class="analyze-button"
                 >
 
-                    <span>
+                    <span class="button-label">
                         Analyze Resume
                     </span>
 
@@ -230,12 +257,16 @@ We are looking for a Python Developer with experience in Machine Learning, Flask
 
                 </button>
 
-                <a href="/screening" class="secondary-button">
-    Screen Multiple Candidates →
-</a>
+
+                <div class="form-footer">
+
+                    <a href="{{ url_for('screening_page') }}" class="secondary-button">
+                        Screen Multiple Candidates →
+                    </a>
+
+                </div>
 
             </form>
-
 
         </section>
 
@@ -327,32 +358,81 @@ const fileName =
 const form =
     document.getElementById("analysis-form");
 
-const jobDescription =
-    document.getElementById("job_description");
+const analyzeButton =
+    document.getElementById("analyze-button");
 
-const hiddenJobDescription =
-    document.getElementById(
-        "hidden-job-description"
-    );
+const uploadBox =
+    document.querySelector(".upload-box");
 
 
-const uploadBox = document.querySelector(".upload-box");
+function showFileName(file) {
 
-uploadBox.addEventListener("keydown", function(e) {
-    if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        resumeInput.click();
-    }
-});
+    fileName.textContent =
+        "✓ " + file.name;
+
+    uploadBox.classList.add("has-file");
+
+}
+
 
 resumeInput.addEventListener(
     "change",
     function () {
 
         if (this.files.length > 0) {
+            showFileName(this.files[0]);
+        }
 
-            fileName.textContent =
-                "✓ " + this.files[0].name;
+    }
+);
+
+
+/* Drag and drop support */
+
+["dragenter", "dragover"].forEach(
+    function (eventName) {
+
+        uploadBox.addEventListener(
+            eventName,
+            function (event) {
+
+                event.preventDefault();
+                uploadBox.classList.add("dragover");
+
+            }
+        );
+
+    }
+);
+
+
+["dragleave", "drop"].forEach(
+    function (eventName) {
+
+        uploadBox.addEventListener(
+            eventName,
+            function (event) {
+
+                event.preventDefault();
+                uploadBox.classList.remove("dragover");
+
+            }
+        );
+
+    }
+);
+
+
+uploadBox.addEventListener(
+    "drop",
+    function (event) {
+
+        const files = event.dataTransfer.files;
+
+        if (files.length > 0) {
+
+            resumeInput.files = files;
+            showFileName(files[0]);
 
         }
 
@@ -360,19 +440,36 @@ resumeInput.addEventListener(
 );
 
 
+/* Prevent double submits and show a loading state */
+
 form.addEventListener(
     "submit",
     function () {
 
-        hiddenJobDescription.value =
-            jobDescription.value;
+        analyzeButton.classList.add("loading");
+        analyzeButton.disabled = true;
 
-        const btn = document.querySelector(".analyze-button");
-        if (btn) {
-            btn.innerHTML = '<span>Analyzing...</span><span class="arrow">⌛</span>';
-            btn.style.opacity = "0.8";
-            btn.style.cursor = "not-allowed";
-        }
+    }
+);
+
+
+/* Auto-dismiss flash messages */
+
+document.querySelectorAll(".flash").forEach(
+    function (flash) {
+
+        flash.querySelector(".flash-close")
+            .addEventListener("click", function () {
+                flash.remove();
+            });
+
+        setTimeout(
+            function () {
+                flash.classList.add("fade-out");
+            },
+            6000
+        );
+
     }
 );
 

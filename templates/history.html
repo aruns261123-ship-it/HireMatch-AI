@@ -18,24 +18,68 @@
 
 <body>
 
+<div class="page">
+
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        <span class="flash-icon">
+                            {% if category == 'error' %}!{% else %}✓{% endif %}
+                        </span>
+                        <span class="flash-message">{{ message }}</span>
+                        <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    </div>
+
+
     <!-- NAVBAR -->
 
     <nav class="navbar">
 
-        <div class="brand">
+        <a href="{{ url_for('home') }}" class="brand-link">
 
-            <span class="brand-icon">✦</span>
+            <div class="brand">
 
-            HireMatch AI
+                <div class="brand-icon">
+                    H
+                </div>
 
-        </div>
+                <div>
 
+                    <div class="brand-name">
+                        HireMatch <span>AI</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Intelligent Recruitment
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
 
         <div class="nav-right">
 
-            <a href="/"
-               class="nav-history">
+            <a href="{{ url_for('home') }}" class="nav-link">
                 Analyze
+            </a>
+
+            <a href="{{ url_for('screening_page') }}" class="nav-link">
+                Screening
+            </a>
+
+            <a href="{{ url_for('history') }}" class="nav-link active">
+                History
             </a>
 
             <div class="nav-status">
@@ -49,7 +93,6 @@
         </div>
 
     </nav>
-
 
 
     <!-- MAIN CONTENT -->
@@ -76,15 +119,36 @@
             </div>
 
 
-            <a href="/"
-               class="back-link">
+            <div class="history-header-actions">
 
-                ← Analyze Resume
+                <a href="{{ url_for('home') }}" class="back-link">
+                    ← Analyze Resume
+                </a>
 
-            </a>
+                {% if analyses %}
+
+                <form
+                    action="{{ url_for('clear_history') }}"
+                    method="POST"
+                    class="clear-history-form"
+                    id="clear-history-form"
+                >
+
+                    <button
+                        type="submit"
+                        class="danger-button"
+                        id="clear-history-button"
+                    >
+                        Clear History
+                    </button>
+
+                </form>
+
+                {% endif %}
+
+            </div>
 
         </div>
-
 
 
         {% if analyses %}
@@ -153,7 +217,7 @@
 
                         <td>
 
-                            <span class="score-badge">
+                            <span class="score-badge score-{{ score_color(analysis.match_score) }}">
 
                                 {{ analysis.match_score }}%
 
@@ -178,19 +242,55 @@
 
                         <td>
 
-                            {{ analysis.matching_skills }}
+                            {% if analysis.matching_skills %}
+
+                                <div class="history-skills">
+
+                                    {% for skill in analysis.matching_skills %}
+
+                                        <span class="skill matching">
+                                            ✓ {{ skill }}
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="empty">None</span>
+
+                            {% endif %}
 
                         </td>
 
 
                         <td>
 
-                            {{ analysis.missing_skills }}
+                            {% if analysis.missing_skills %}
+
+                                <div class="history-skills">
+
+                                    {% for skill in analysis.missing_skills %}
+
+                                        <span class="skill missing">
+                                            + {{ skill }}
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="empty">None</span>
+
+                            {% endif %}
 
                         </td>
 
 
-                        <td>
+                        <td class="history-date">
 
                             {{ analysis.created_at }}
 
@@ -232,8 +332,7 @@
             </p>
 
 
-            <a href="/"
-               class="primary-button">
+            <a href="{{ url_for('home') }}" class="primary-button">
 
                 Analyze First Resume
 
@@ -246,6 +345,66 @@
 
 
     </main>
+
+
+    <footer>
+
+        HireMatch AI • NLP-Based Resume Screening &amp; Job Matching
+
+    </footer>
+
+
+</div>
+
+
+<script>
+
+/* Confirm before clearing history */
+
+const clearForm =
+    document.getElementById("clear-history-form");
+
+if (clearForm) {
+
+    clearForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const confirmed = confirm(
+                "Delete all analysis history? This cannot be undone."
+            );
+
+            if (!confirmed) {
+                event.preventDefault();
+            }
+
+        }
+    );
+
+}
+
+
+/* Auto-dismiss flash messages */
+
+document.querySelectorAll(".flash").forEach(
+    function (flash) {
+
+        flash.querySelector(".flash-close")
+            .addEventListener("click", function () {
+                flash.remove();
+            });
+
+        setTimeout(
+            function () {
+                flash.classList.add("fade-out");
+            },
+            6000
+        );
+
+    }
+);
+
+</script>
 
 
 </body>

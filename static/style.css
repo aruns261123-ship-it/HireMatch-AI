@@ -8,7 +8,11 @@
 body {
 
     font-family:
-        Inter,
+        'Segoe UI',
+        'Inter',
+        -apple-system,
+        BlinkMacSystemFont,
+        Roboto,
         Arial,
         sans-serif;
 
@@ -1534,7 +1538,9 @@ footer {
 .history-table-wrapper {
     overflow-x: auto;
     border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e5e7eb;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
 }
 
 .history-table {
@@ -1547,7 +1553,7 @@ footer {
 .history-table td {
     padding: 18px 20px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid #eef1f6;
 }
 
 .history-table th {
@@ -1559,6 +1565,13 @@ footer {
 
 .history-table td {
     font-size: 14px;
+    vertical-align: top;
+}
+
+.history-date {
+    white-space: nowrap;
+    color: #6b7280;
+    font-size: 12px !important;
 }
 
 .history-table tr:last-child td {
@@ -1570,14 +1583,38 @@ footer {
     padding: 7px 12px;
     border-radius: 999px;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.1);
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.score-badge.score-high { background: #ecfdf5; color: #059669; }
+.score-badge.score-good { background: #eff6ff; color: #2563eb; }
+.score-badge.score-mid { background: #fffbeb; color: #d97706; }
+.score-badge.score-low { background: #fef2f2; color: #dc2626; }
+
+.history-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 260px;
+}
+
+.history-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.clear-history-form {
+    margin: 0;
 }
 
 .empty-history {
     text-align: center;
     padding: 100px 30px;
     border-radius: 24px;
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    background: white;
+    border: 1px dashed #d1d5db;
 }
 
 .empty-icon {
@@ -1596,15 +1633,203 @@ footer {
     opacity: 0.65;
 }
 
-.nav-history {
-    text-decoration: none;
-    font-weight: 600;
-    margin-right: 25px;
-}
+/* NAV LINKS */
 
 .nav-right {
     display: flex;
     align-items: center;
+}
+
+.nav-link {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: #6b7280;
+    margin-right: 25px;
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+    transition: color .2s ease;
+}
+
+.nav-link:hover {
+    color: #2563eb;
+}
+
+.nav-link.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.brand-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* FLASH MESSAGES */
+
+.flash-container {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(92%, 560px);
+}
+
+.flash {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+    animation: flash-in .25s ease;
+}
+
+@keyframes flash-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flash-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: white;
+}
+
+.flash-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.flash-error .flash-icon {
+    background: #dc2626;
+}
+
+.flash-success {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.flash-success .flash-icon {
+    background: #059669;
+}
+
+.flash-warning {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.flash-warning .flash-icon {
+    background: #d97706;
+}
+
+.flash-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: .55;
+    padding: 2px 4px;
+}
+
+.flash-close:hover {
+    opacity: 1;
+}
+
+.flash.fade-out {
+    opacity: 0;
+    transition: opacity .5s ease;
+}
+
+.inline-flash {
+    margin-bottom: 20px;
+    box-shadow: none;
+    animation: none;
+}
+
+/* BUTTON STATES */
+
+.analyze-button.loading,
+.screening-button.loading {
+    opacity: .75;
+    cursor: wait;
+    transform: none;
+}
+
+.upload-box.dragover,
+.upload-zone.dragover {
+    border-color: #2563eb;
+    background: #f0f7ff;
+    transform: scale(1.01);
+}
+
+.upload-box.has-file {
+    border-color: #86efac;
+    border-style: solid;
+    background: #f6fef9;
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 16px;
+}
+
+/* SCORE COLOR HELPERS */
+
+.score-high { color: #059669; }
+.score-good { color: #2563eb; }
+.score-mid { color: #d97706; }
+.score-low { color: #dc2626; }
+
+.score-fill.score-high,
+.candidate-score.score-high .score-fill { background: #10b981; }
+.candidate-score.score-good .score-fill { background: #2563eb; }
+.candidate-score.score-mid .score-fill { background: #f59e0b; }
+.candidate-score.score-low .score-fill { background: #ef4444; }
+
+/* DANGER BUTTON */
+
+.danger-button {
+    padding: 10px 18px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: white;
+    color: #dc2626;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.danger-button:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
 }
 
 /* =================================
@@ -1648,7 +1873,9 @@ footer {
 .ranking-stat {
     padding: 24px;
     border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e5e7eb;
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
 }
 
 .stat-label {
@@ -1679,12 +1906,19 @@ footer {
     gap: 25px;
     padding: 25px;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: transform 0.2s ease;
+    border: 1px solid #e5e7eb;
+    background: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .candidate-card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .07);
+}
+
+.top-candidate {
+    border-color: #bfdbfe;
+    background: linear-gradient(180deg, #f8fbff, white);
 }
 
 
@@ -1719,10 +1953,12 @@ footer {
 }
 
 .skill-badge {
-    padding: 6px 9px;
+    padding: 6px 10px;
     border-radius: 999px;
     font-size: 11px;
-    background: rgba(255, 255, 255, 0.08);
+    font-weight: 600;
+    background: #ecfdf5;
+    color: #047857;
 }
 
 .missing-skills {
@@ -1733,6 +1969,10 @@ footer {
 
 .missing-skills span {
     margin-left: 7px;
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: #fff7ed;
+    color: #c2410c;
 }
 
 
@@ -1759,14 +1999,15 @@ footer {
     width: 100%;
     height: 7px;
     border-radius: 99px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #e5e7eb;
     overflow: hidden;
 }
 
 .score-fill {
     height: 100%;
     border-radius: 99px;
-    background: currentColor;
+    background: #2563eb;
+    transition: width .6s ease;
 }
 
 
@@ -1775,6 +2016,10 @@ footer {
 .ranking-actions {
     margin-top: 35px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
 }
 
 
@@ -1842,7 +2087,9 @@ footer {
 .screening-card {
     padding: 30px;
     border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e5e7eb;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
 }
 
 .card-heading {
@@ -1872,7 +2119,8 @@ footer {
     border-radius: 12px;
     font-size: 12px;
     font-weight: 800;
-    background: rgba(255, 255, 255, 0.08);
+    background: #eff6ff;
+    color: #2563eb;
 }
 
 .screening-textarea {
@@ -1882,15 +2130,18 @@ footer {
     resize: vertical;
     padding: 18px;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #d1d5db;
+    background: white;
     font: inherit;
-    color: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #111827;
     outline: none;
 }
 
 .screening-textarea:focus {
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px #eff6ff;
 }
 
 .upload-zone {
@@ -1901,15 +2152,15 @@ footer {
     justify-content: center;
     gap: 8px;
     border-radius: 18px;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border: 2px dashed #cbd5e1;
     cursor: pointer;
     text-align: center;
     transition: 0.2s ease;
 }
 
 .upload-zone:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.03);
+    border-color: #2563eb;
+    background: #f8fbff;
 }
 
 .upload-zone input {
@@ -1917,8 +2168,16 @@ footer {
 }
 
 .upload-icon {
-    font-size: 32px;
+    font-size: 28px;
     margin-bottom: 5px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .upload-zone strong {
@@ -1927,7 +2186,7 @@ footer {
 
 .upload-zone span {
     font-size: 12px;
-    opacity: 0.55;
+    color: #9ca3af;
 }
 
 .selected-files {
@@ -1947,7 +2206,7 @@ footer {
     padding: 10px 12px;
     margin-bottom: 7px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
+    background: #f3f4f6;
     font-size: 13px;
 }
 
@@ -1959,14 +2218,14 @@ footer {
     font: inherit;
     font-weight: 800;
     cursor: pointer;
-    color: inherit;
-    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    background: #2563eb;
     transition: 0.2s ease;
 }
 
 .screening-button:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.15);
+    background: #1d4ed8;
 }
 
 @media (max-width: 600px) {
@@ -1991,23 +2250,17 @@ footer {
     justify-content: center;
     padding: 14px 22px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid #dbe3ef;
     text-decoration: none;
     font-weight: 700;
-    color: inherit;
-    background: rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    color: #2563eb;
+    background: white;
     transition: 0.2s ease;
 }
 
 .secondary-button:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.1);
-}
-/* ACCESSIBILITY: Focus states for custom inputs */
-.upload-box:focus-visible,
-.upload-zone:focus-visible {
-    outline: 3px solid #2563eb;
-    outline-offset: 2px;
-    border-color: #2563eb;
-    background: #f8fbff;
+    background: #eff6ff;
+    border-color: #bfdbfe;
 }
